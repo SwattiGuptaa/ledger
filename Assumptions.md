@@ -3,7 +3,7 @@
 * One to one mapping between client and account
 * One Entity(Organization) can have multiple accounts
 * None of the data models could be deleted but status updated to closed etc.
-* Considered on single service - in production system obviously following DDD separate service for different domains
+* Considered single service - in production system obviously following DDD separate service for different domains
 
 ## Account 
 * Account has below statuses
@@ -17,10 +17,11 @@
 * Considered **only** fiat_currency wallet based on currency, like GBP, INR etc
 * Though wallet can have multiple types and business logic will vary for transfer between them
 * Assumed cash is deposited to the fiat_currency wallets as initial balance, and thus corresponding entries in posting_command table with status cleared
+* For this app purpose used balance in wallet to check it before money transfer (ideally the balance should be retrieved from reconciled balance and Posting_command table)
 
 
 ## Postings (Transfer b/w wallets)
-* Transfer between wallets can be done only when Account status is OPEN
+* Transfer between wallets can be done only if they belong to same Account and Account status is OPEN
 * Posting has below statuses
   * PENDING - when initial tranfer/posting request is made
   * CLEARED - when transfer is done successfully

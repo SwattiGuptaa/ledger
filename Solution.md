@@ -35,5 +35,12 @@ Scheduler used to populate data in wallet_ledger(READ) table. Reconciliation don
 * Optimistic concurrency -> before actually transferring balance
 * Read part of application can use NOSql db and can be populated asynchronously using Mq
 * POST API can be updated to send back URL to check progress.
+* Validations can be improved
+
+## TODO 
+Client of the ledger should be able to change to postings it has done before
+
+Approach can be to get the related postings using correlationId and verify the Postings status, if it is CLEARED it cannot be changed/reverted. Updates allowed only if the posting is in PENDING status.
+In the event log add and entry for update request and corresponding result of it i.e. whether it was successful or not. 
 
 

@@ -15,6 +15,8 @@ public class MultiplePostingEvent {
     private String eventType;
     @NonNull
     private Long fromWalletId;
-    private Map<String, BigDecimal> destinationWallets;
+    // map to hold toWalletId as key and amount to transfer as value
+    @NonNull
+    private Map<Long, BigDecimal> destinationWallets;
 
 }

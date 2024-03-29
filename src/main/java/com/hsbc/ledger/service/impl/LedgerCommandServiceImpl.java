@@ -1,8 +1,9 @@
 package com.hsbc.ledger.service.impl;
 
 import com.hsbc.ledger.dto.PostingEventTypeEnum;
+import com.hsbc.ledger.dto.command.MultiplePostingEvent;
 import com.hsbc.ledger.dto.command.PostingEvent;
-import com.hsbc.ledger.dto.command.SinglePostingResponse;
+import com.hsbc.ledger.dto.command.PostingResponse;
 import com.hsbc.ledger.entity.Event;
 import com.hsbc.ledger.entity.PostingCommand;
 import com.hsbc.ledger.entity.PostingQuery;
@@ -44,9 +45,14 @@ public class LedgerCommandServiceImpl implements LedgerCommandService {
     private final MessagePublisher messagePublisher;
     private final ConversionService conversionService;
 
-    public SinglePostingResponse validateAndSendPostingEvent(PostingEvent postingEvent) {
+    /**
+     * This method validate Posting_event, convert it to Create event and publish it to MQ
+     * @param postingEvent validate this and send it over MQ
+     * @return PostingResponse that will confirm client that request has been accepted
+     */
+    public PostingResponse validateAndSendPostingEvent(PostingEvent postingEvent) {
 
-        walletValidator.validateSingleTransferEvent(postingEvent);
+        walletValidator.validateSinglePostingEvent(postingEvent);
 
         //convert to Event and store in eventStore
         Event event = conversionService.convert(postingEvent, Event.class);
@@ -59,7 +65,7 @@ public class LedgerCommandServiceImpl implements LedgerCommandService {
         postingEvent.setCorrelationId(event.getCorrelationId());
         messagePublisher.sendMessage(postingEvent);
 
-        SinglePostingResponse response = new SinglePostingResponse(LocalDateTime.now(), POSTING_EVENT_ACCEPTED_MSG);
+        PostingResponse response = new PostingResponse(LocalDateTime.now(), POSTING_EVENT_ACCEPTED_MSG);
         // TODO provide a URL in response to check if posting cleared or failed
 
         return response;
@@ -67,6 +73,7 @@ public class LedgerCommandServiceImpl implements LedgerCommandService {
 
     /**
      * This method accepts CreatePostingEvent and creates PostingCommand with status PENDING
+     * and publish event that it is in_process
      *
      * @param postingEvent - Posting event that should be processed
      */
@@ -90,6 +97,11 @@ public class LedgerCommandServiceImpl implements LedgerCommandService {
         messagePublisher.sendMessage(postingEvent);
     }
 
+    /**
+     * This method accepts InProcessPostingEvent and creates PostingCommand with status CLEARED/FAILED
+     * and publish completedEvent to MQ
+     * @param postingEvent
+     */
     @Transactional
     public void processPostingEvent(PostingEvent postingEvent) {
 
@@ -128,6 +140,19 @@ public class LedgerCommandServiceImpl implements LedgerCommandService {
 
         //Broadcast the message as balance updated
         messagePublisher.sendMessage("Balance Updated for client " + fromWallet.getAccount().getClient());
+    }
+
+    @Override
+    public PostingResponse validateAndSendMultiplePostingEvent(MultiplePostingEvent multiplePostingEvent) {
+
+        walletValidator.validateMultipleTransferEvent(multiplePostingEvent);
+
+        //TODO
+        // post the create event to queue
+        // create pending posting commands and post in process event to queue
+        // process the transfer -> check if balance in fromWallet is >= summationOfAmount to transfer -> do transfer
+        // else mark the posting failed
+        return  new PostingResponse(LocalDateTime.now(), POSTING_EVENT_ACCEPTED_MSG);
     }
 
     private void savePostingCommands(PostingEvent postingEvent, Wallet fromWallet, Wallet toWallet, String correlationId, PostingCommand.PostingStatus status) {

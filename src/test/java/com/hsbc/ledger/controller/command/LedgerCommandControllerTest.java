@@ -2,7 +2,7 @@ package com.hsbc.ledger.controller.command;
 
 
 import com.hsbc.ledger.dto.command.PostingEvent;
-import com.hsbc.ledger.dto.command.SinglePostingResponse;
+import com.hsbc.ledger.dto.command.PostingResponse;
 import com.hsbc.ledger.exception.WalletNotFoundException;
 import com.hsbc.ledger.service.LedgerCommandService;
 import org.junit.jupiter.api.Test;
@@ -43,11 +43,11 @@ public class LedgerCommandControllerTest {
         // Mock behavior of ledgerCommandService
         PostingEvent postingEvent = createPostingEvent();
 
-        SinglePostingResponse response = new SinglePostingResponse(LocalDateTime.now(), POSTING_EVENT_ACCEPTED_MSG);
+        PostingResponse response = new PostingResponse(LocalDateTime.now(), POSTING_EVENT_ACCEPTED_MSG);
 
         when(ledgerCommandService.validateAndSendPostingEvent(postingEvent)).thenReturn(response);
 
-        ResponseEntity<SinglePostingResponse> responseEntity = (ResponseEntity<SinglePostingResponse>) ledgerCommandController.createPosting(postingEvent);
+        ResponseEntity<PostingResponse> responseEntity = (ResponseEntity<PostingResponse>) ledgerCommandController.createPosting(postingEvent);
 
         Mockito.verify(ledgerCommandService).validateAndSendPostingEvent(postingEvent);
         // Verify the response

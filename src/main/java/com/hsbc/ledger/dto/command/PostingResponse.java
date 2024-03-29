@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Component
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class SinglePostingResponse {
+public class PostingResponse {
 
     private LocalDateTime timestamp;
     private String message;
