@@ -34,8 +34,6 @@ public class Account {
     @Column(name = "account_status")
     private AccountStatus status;
 
-    // Constructors, getters, and setters
-
     public enum AccountStatus {
         PENDING,
         OPEN,

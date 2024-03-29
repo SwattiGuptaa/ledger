@@ -9,8 +9,10 @@ import com.hsbc.ledger.repository.WalletLedgerRepository;
 import com.hsbc.ledger.repository.WalletRepository;
 import com.hsbc.ledger.service.impl.LedgerQueryServiceImpl;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -23,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class LedgerQueryServiceTest {
     @Mock
     private WalletRepository walletRepository;
@@ -59,7 +62,7 @@ public class LedgerQueryServiceTest {
         PostingQuery postingQuery = new PostingQuery();
         postingQuery.setAmount(todayBalance);
         postingQueryList.add(postingQuery);
-        when(postingQueryRepository.findByWalletIdAndStatusAndTimestampBetween(any(Long.class), PostingQuery.PostingStatus.CLEARED, any(LocalDateTime.class), any(LocalDateTime.class)))
+        when(postingQueryRepository.findByWalletIdAndStatusAndTimestampBetween(any(Long.class), any(PostingQuery.PostingStatus.class), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(postingQueryList);
 
         // Call the service method
