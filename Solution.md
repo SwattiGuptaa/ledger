@@ -29,13 +29,15 @@ Scheduler used to populate data in wallet_ledger(READ) table. Reconciliation don
 ## Improvements 
 
 * Transaction Outbox pattern to avoid dual writes
-* Auditing and monitoring
-* Authentication and authorization
 * Load balancing and more
 * Optimistic concurrency -> before actually transferring balance
 * Read part of application can use NOSql db and can be populated asynchronously using Mq
+* Scheduler can be separate service/ or even AWS lambda
+* Cache implementation for reconciled data 
 * POST API can be updated to send back URL to check progress.
-* Validations can be improved
+* Validations 
+* Auditing and monitoring
+* Authentication and authorization
 
 ## TODO 
 Client of the ledger should be able to change to postings it has done before

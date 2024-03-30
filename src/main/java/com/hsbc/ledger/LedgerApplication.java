@@ -33,7 +33,7 @@ public class LedgerApplication {
 		Queue queue = new Queue(WALLET_POSTING_QUEUE, false);
 		Queue queryQueue = new Queue(POSTING_QUERY_QUEUE, false);
 
-		TopicExchange topicExchange = new TopicExchange("WALLET_POSTING");
+		TopicExchange topicExchange = new TopicExchange("posting.exchange");
 
 		return new Declarables(
 				queue,
