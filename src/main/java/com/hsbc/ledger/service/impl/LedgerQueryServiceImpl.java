@@ -10,6 +10,8 @@ import com.hsbc.ledger.repository.WalletLedgerRepository;
 import com.hsbc.ledger.repository.WalletRepository;
 import com.hsbc.ledger.service.LedgerQueryService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +35,7 @@ public class LedgerQueryServiceImpl implements LedgerQueryService {
     @Autowired
     private final WalletRepository walletRepository;
 
+    private Logger logger = LoggerFactory.getLogger(LedgerQueryServiceImpl.class);
 
     public WalletLedgerDTO queryWalletLedger(Long walletId) {
 
@@ -79,8 +82,10 @@ public class LedgerQueryServiceImpl implements LedgerQueryService {
     private BigDecimal getBalanceOfWallet(Long walletId, LocalDate untilDate, LocalDateTime fromTimeStamp, LocalDateTime toTimeStamp) {
 
         //Fetch the balance from curated data until provided date
+        logger.debug("Fetch the precalculated balance until a day before");
         List<WalletLedger> walletLedgerList = walletLedgerRepository.findByWalletIdAndReconcileDateLessThanEqual(walletId, untilDate);
 
+        logger.debug("Fetch the balance for rest of the time");
         List<PostingQuery> postingQueryList = postingQueryRepository.findByWalletIdAndStatusAndTimestampBetween(walletId, CLEARED, fromTimeStamp, toTimeStamp);
 
         BigDecimal balanceUntilYesterday = walletLedgerList.stream()

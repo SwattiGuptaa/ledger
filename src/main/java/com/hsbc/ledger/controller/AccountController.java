@@ -6,6 +6,8 @@ import com.hsbc.ledger.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,7 @@ public class AccountController {
 
     @Autowired
     private AccountService accountService;
-
+    private Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @Operation(summary = "Updates the Account status",
             description = "An OPEN account can be requested to be CLOSED"
@@ -35,13 +37,14 @@ public class AccountController {
         } catch (AccountNotFoundException | InvalidAccountStatusException e) {
             return handleCustomException(e);
         }  catch (Exception e) {
+            logger.error("Exception occurred ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
         }
     }
 
     @ExceptionHandler({AccountNotFoundException.class, InvalidAccountStatusException.class})
     public ResponseEntity<String> handleCustomException(RuntimeException e) {
-        // Handle Exception and return appropriate error response
+        logger.error("Bad request:Exception occurred", e);
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 }

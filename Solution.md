@@ -12,8 +12,12 @@ Scheduler used to populate data in wallet_ledger(READ) table. Reconciliation don
 * DB - Postgres
 * MessageBroker - RabbitMq
 
+## ER diagram
+![](./src/main/resources/static/ER.png)
+
 ### API documentation
 * http://localhost:8080/swagger-ui/index.html
+Quick look at [openApi.json](./src/main/resources/openApi.json) generated from above
 
 ## Improved Solution
 ![](./src/main/resources/static/Improved.png)
@@ -35,14 +39,16 @@ Scheduler used to populate data in wallet_ledger(READ) table. Reconciliation don
 * Scheduler can be separate service/ or even AWS lambda
 * Cache implementation for reconciled data 
 * POST API can be updated to send back URL to check progress.
-* Validations 
-* Auditing and monitoring
+* Validations - Improved validations
+* Auditing and monitoring - Loggers, integration with Prometheus and Grafana
 * Authentication and authorization
+* Table partitioning
+* BDD - cucumber testing
 
 ## TODO 
-Client of the ledger should be able to change to postings it has done before
-
+* Client of the ledger should be able to change to postings it has done before
 Approach can be to get the related postings using correlationId and verify the Postings status, if it is CLEARED it cannot be changed/reverted. Updates allowed only if the posting is in PENDING status.
-In the event log add and entry for update request and corresponding result of it i.e. whether it was successful or not. 
+In the event log add and entry for update request and corresponding result of it i.e. whether it was successful or not.
+* Multiple posting events -> implement service layer
 
 

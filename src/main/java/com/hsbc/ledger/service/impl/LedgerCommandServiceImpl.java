@@ -18,6 +18,8 @@ import com.hsbc.ledger.service.LedgerCommandService;
 import com.hsbc.ledger.validator.WalletValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,7 @@ public class LedgerCommandServiceImpl implements LedgerCommandService {
     @Autowired
     private final MessagePublisher messagePublisher;
     private final ConversionService conversionService;
+    private Logger logger = LoggerFactory.getLogger(LedgerCommandServiceImpl.class);
 
     /**
      * This method validate Posting_event, convert it to Create event and publish it to MQ
@@ -51,7 +54,7 @@ public class LedgerCommandServiceImpl implements LedgerCommandService {
      * @return PostingResponse that will confirm client that request has been accepted
      */
     public PostingResponse validateAndSendPostingEvent(PostingEvent postingEvent) {
-
+        logger.debug("validate the requested PostingEvent");
         walletValidator.validateSinglePostingEvent(postingEvent);
 
         //convert to Event and store in eventStore

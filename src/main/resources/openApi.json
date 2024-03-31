@@ -1,0 +1,240 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "description": "Open API documentation for Ledger Service"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/account/v1/updateStatus/{accountId}": {
+      "put": {
+        "tags": [
+          "account-controller"
+        ],
+        "summary": "Updates the Account status",
+        "description": "An OPEN account can be requested to be CLOSED",
+        "operationId": "updateAccountStatus",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error encountered at server side",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ledger/v1/wallets/transfer": {
+      "post": {
+        "tags": [
+          "ledger-command-controller"
+        ],
+        "summary": "Transfer money from one wallet to multiple wallets ",
+        "operationId": "createPostings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultiplePostingEvent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Transfer request accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostingResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error encountered at server side",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ledger/v1/wallet/transfer": {
+      "post": {
+        "tags": [
+          "ledger-command-controller"
+        ],
+        "summary": "Transfer money from one wallet to other ",
+        "operationId": "createPosting",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostingEvent"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Transfer request accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostingResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error encountered at server side",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MultiplePostingEvent": {
+        "type": "object",
+        "properties": {
+          "correlationId": {
+            "type": "string"
+          },
+          "eventType": {
+            "type": "string"
+          },
+          "fromWalletId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "destinationWallets": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "PostingResponse": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "PostingEvent": {
+        "required": [
+          "fromWalletId",
+          "toWalletId"
+        ],
+        "type": "object",
+        "properties": {
+          "correlationId": {
+            "type": "string"
+          },
+          "fromWalletId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "toWalletId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "eventType": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

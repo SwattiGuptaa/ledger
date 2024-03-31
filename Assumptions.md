@@ -16,17 +16,17 @@
 ## Wallet
 * Considered **only** fiat_currency wallet based on currency, like GBP, INR etc
 * Though wallet can have multiple types and business logic will vary for transfer between them
-* Assumed cash is deposited to the fiat_currency wallets as initial balance, and thus corresponding entries in posting_command table with status cleared
+* Assumed cash is deposited to the fiat_currency wallets as initial balance, and thus corresponding entries in posting_command table with status CLEARED
 * For this app purpose used balance in wallet to check it before money transfer (ideally the balance should be retrieved from reconciled balance and Posting_command table)
 
 
 ## Postings (Transfer b/w wallets)
 * Transfer between wallets can be done only if they belong to same Account and Account status is OPEN
 * Posting has below statuses
-  * PENDING - when initial tranfer/posting request is made
+  * PENDING - when initial transfer/posting request is made
   * CLEARED - when transfer is done successfully
   * FAILED - when transfer failed for any reason
-* In scope - Client can transfer money b/w fiat_curreny wallets **Note:** for simplicity just allowed transfer without any rate conversion. RateConversion service to be used  
+* In scope - Client can transfer money b/w fiat_currency wallets **Note:** for simplicity just allowed transfer without any rate conversion. RateConversion service to be used  
 * Client can transfer between wallets within an Account. No inter account transfers allowed
 * Transfer from one fiat_currency wallet to multiple fiat_currency wallets can be done
 * When posting request is made by client an `CreatePostingEvent` is created and published to RabbitMq. These events are recorded in 

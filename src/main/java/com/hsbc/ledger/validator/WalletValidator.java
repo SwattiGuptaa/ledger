@@ -9,6 +9,8 @@ import com.hsbc.ledger.exception.InsufficientBalanceException;
 import com.hsbc.ledger.exception.WalletNotFoundException;
 import com.hsbc.ledger.repository.WalletRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,35 +22,39 @@ import java.util.Set;
 public class WalletValidator {
     @Autowired
     private final WalletRepository walletRepository;
+    private Logger logger = LoggerFactory.getLogger(WalletValidator.class);
 
-    public void validateSinglePostingEvent(PostingEvent postingEvent){
+    public void validateSinglePostingEvent(PostingEvent postingEvent) {
         //validates if valid wallet id is provided
         Wallet fromWallet = getWallet(postingEvent.getFromWalletId(), "From wallet not found");
         Wallet toWallet = getWallet(postingEvent.getToWalletId(), "To wallet not found");
 
         Account fromAccount = fromWallet.getAccount();
         Account toAccount = toWallet.getAccount();
-        if(!fromAccount.getId().equals(toAccount.getId())){
+        if (!fromAccount.getId().equals(toAccount.getId())) {
+            logger.error("Wallets not from same account");
             throw new AccountClosedException("Wallets belong to different Accounts");
         }
         //Validate account is open
-        if(!fromAccount.getStatus().equals(Account.AccountStatus.OPEN)){
+        if (!fromAccount.getStatus().equals(Account.AccountStatus.OPEN)) {
+            logger.error("Account is not in OPEN status");
             throw new AccountClosedException("Account is closed and hence transfer cannot be done");
         }
 
         // Validate if the from wallet has sufficient balance
         if (fromWallet.getBalance().compareTo(postingEvent.getTotalAmount()) < 0) {
+            logger.error("Balance is insufficient and thus transfer cannot be completed");
             throw new InsufficientBalanceException("Insufficient balance in the wallet");
         }
 
     }
 
-    public void validateMultipleTransferEvent(MultiplePostingEvent multiplePostingEvent){
+    public void validateMultipleTransferEvent(MultiplePostingEvent multiplePostingEvent) {
         Set<Long> toWalletIds;
 
-        if(multiplePostingEvent.getDestinationWallets().size() > 0){
+        if (multiplePostingEvent.getDestinationWallets().size() > 0) {
             toWalletIds = multiplePostingEvent.getDestinationWallets().keySet();
-        } else{
+        } else {
             throw new RuntimeException("toWalletIds not provided");
         }
 
@@ -56,14 +62,16 @@ public class WalletValidator {
         Wallet fromWallet = getWallet(multiplePostingEvent.getFromWalletId(), "From wallet not found");
 
         List<Wallet> toWalletIdList = walletRepository.findByIdIn(toWalletIds);
-        if(toWalletIdList.size() != toWalletIds.size()){
+        if (toWalletIdList.size() != toWalletIds.size()) {
+            logger.error("Invalid wallet Id provided");
             throw new WalletNotFoundException("Invalid toWalletIds provided");
         }
 
         //Validate wallets belong to same account
         boolean isSameAccountForToWalletIds = toWalletIdList.stream().map(Wallet::getAccount).distinct().count() == 1;
         Account fromAccount = fromWallet.getAccount();
-        if(isSameAccountForToWalletIds && !fromAccount.getId().equals(toWalletIdList.get(0).getId())){
+        if (isSameAccountForToWalletIds && !fromAccount.getId().equals(toWalletIdList.get(0).getId())) {
+            logger.error("Wallets not from same account");
             throw new AccountClosedException("Wallets belong to different Accounts");
         }
     }

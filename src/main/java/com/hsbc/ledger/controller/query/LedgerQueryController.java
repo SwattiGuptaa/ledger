@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,7 +26,7 @@ public class LedgerQueryController {
 
     @Autowired
     private LedgerQueryService ledgerQueryService;
-
+    private Logger logger = LoggerFactory.getLogger(LedgerQueryController.class);
 
     @Operation(summary = "Fetches the ledger for provided walletId",
             description = "Return Ledger for given WalletId"
@@ -43,8 +45,10 @@ public class LedgerQueryController {
             WalletLedgerDTO ledger = ledgerQueryService.queryWalletLedger(walletId);
             return ResponseEntity.ok().body(ledger);
         } catch (WalletNotFoundException e) {
+            logger.error("Bad request: Exception occurred", e);
             return ResponseEntity.badRequest().body("WalletNotFound");
         } catch (Exception e) {
+            logger.error("Exception occurred", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -66,8 +70,10 @@ public class LedgerQueryController {
             WalletLedgerDTO ledger = ledgerQueryService.queryWalletLedgerUntilTime(walletId, timestamp);
             return ResponseEntity.ok().body(ledger);
         } catch (WalletNotFoundException e) {
+            logger.error("Bad request: Exception occurred", e);
             return ResponseEntity.badRequest().body("WalletNotFound");
         } catch (Exception e) {
+            logger.error("Exception occurred", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

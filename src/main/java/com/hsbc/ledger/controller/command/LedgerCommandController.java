@@ -29,7 +29,7 @@ public class LedgerCommandController {
     @Autowired
     private LedgerCommandService ledgerCommandService;
 
-    Logger logger = LoggerFactory.getLogger(LedgerCommandController.class);
+    private Logger logger = LoggerFactory.getLogger(LedgerCommandController.class);
 
     @Operation(summary = "Transfer money from one wallet to other ")
     @ApiResponses(value = {
@@ -76,6 +76,7 @@ public class LedgerCommandController {
     @ExceptionHandler({WalletNotFoundException.class, InsufficientBalanceException.class, AccountClosedException.class})
     public ResponseEntity<String> handleCustomException(RuntimeException e) {
         // Handle Exception and return appropriate error response
+        logger.error("Bad request: Exception occurred", e);
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
