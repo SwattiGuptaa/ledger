@@ -29,6 +29,7 @@ Quick look at [openApi.json](./src/main/resources/openApi.json) generated from a
 * tables will be created at server start up (just for dev)
 * [init.sql](./src/main/resources/init.sql) for postgres db setup
 * [data.sql](./src/main/resources/data.sql) this script to be executed after db container is up and running
+* [prometheus.yml](./src/main/resources/prometheus/prometheus.yml) update target to the machine IP
 
 ## Improvements 
 
@@ -36,11 +37,12 @@ Quick look at [openApi.json](./src/main/resources/openApi.json) generated from a
 * Load balancing and more
 * Optimistic concurrency -> before actually transferring balance
 * Read part of application can use NOSql db and can be populated asynchronously using Mq
+* Logging can also be done asynchronously
 * Scheduler can be separate service/ or even AWS lambda
 * Cache implementation for reconciled data 
 * POST API can be updated to send back URL to check progress.
 * Validations - Improved validations
-* Auditing and monitoring - Loggers, integration with Prometheus and Grafana
+* Auditing and monitoring - Loggers, integration with Grafana
 * Authentication and authorization
 * Table partitioning
 * BDD - cucumber testing
