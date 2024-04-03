@@ -23,8 +23,8 @@ Quick look at [openApi.json](./src/main/resources/openApi.json) generated from a
 ![](./src/main/resources/static/Improved.png)
 
 ## To run application
-* uses docker compose feature of spring boot, so docker containers for dba nd mq are started automatically
-* Update property `ledger.write.enabled` to ensure REad/write mode
+* uses docker compose feature of spring boot, so docker containers for db, mq and prometheus are started automatically
+* Update property `ledger.write.enabled` to ensure Read/write mode
 * update server.port for running mutiple instances of application
 * tables will be created at server start up (just for dev)
 * [init.sql](./src/main/resources/init.sql) for postgres db setup
@@ -39,6 +39,7 @@ Quick look at [openApi.json](./src/main/resources/openApi.json) generated from a
 * Read part of application can use NOSql db and can be populated asynchronously using Mq
 * Logging can also be done asynchronously
 * Scheduler can be separate service/ or even AWS lambda
+* Broadcasts messages for updates to client balance can be a separate service as well. 
 * Cache implementation for reconciled data 
 * POST API can be updated to send back URL to check progress.
 * Validations - Improved validations
